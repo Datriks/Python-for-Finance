@@ -1,0 +1,9 @@
+Extracting data with Quandl
+
+# Import the quandl package
+import quandl
+# Get the data from quandl
+data = quandl.get("WIKI/KO", start_date="2016-01-01", end_date="2018-01-01", 
+    api_key=<Your_API_Key>)
+	
+UkBXz6sLeET-4uRJ-65q

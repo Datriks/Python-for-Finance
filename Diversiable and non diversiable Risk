@@ -1,0 +1,43 @@
+
+
+import numpy as np
+import pandas as pd 
+from pandas_datareader import data as wb
+import matplotlib.pyplot as plt
+
+tickers = ['PG','BEI.DE']
+
+sec_data = pd.DataFrame()
+for t in tickers:
+    sec_data[t] = wb.DataReader(t,data_source='yahoo',start='2007-1-1')['Adj Close']
+sec_data.head(10)
+
+#Graph
+normalization = sec_data/sec_data.iloc[0]
+normalization.plot(figsize=(16,5),lw = 1)
+
+#Calculating the returns
+sec_returns = np.log(sec_data/sec_data.shift(1))
+sec_returns
+
+# Portfolio Risk
+pfolio_var = np.dot(weights.T,np.dot(sec_returns.cov()*250,weights))
+pfolio_var
+
+# Individual risk
+PG_var_a = sec_returns['PG'].var()*250
+PG_var_a
+
+BEI_var_a = sec_returns['BEI.DE'].var()*250
+BEI_var_a
+
+#Diversiable Risk
+dr = pfolio_var - (weights[0]**2*PG_var_a)-(weights[1]**2*BEI_var_a)
+dr
+
+#Non Diversiable Risk
+n_dr_1 = pfolio_var - dr
+n_dr_1
+
+n_dr_2 = (weights[0]**2*PG_var_a)+(weights[1]**2*BEI_var_a)
+n_dr_2

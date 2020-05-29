@@ -1,0 +1,107 @@
+UK Efficient Frontier Markovitz
+
+import numpy as np
+import pandas as pd 
+from pandas_datareader import data as wb
+import matplotlib.pyplot as plt
+%matplotlib inline
+plt.rcParams['figure.figsize'] = (16, 5)
+plt.rcParams['figure.dpi'] = 300
+plt.rcParams['lines.linewidth'] = 1
+plt.rcParams['axes.grid'] = True
+plt.rcParams['axes.facecolor'] = 'FFFFFF'
+plt.rcParams['font.size'] = 14
+plt.rcParams['patch.edgecolor'] = 'none'
+
+securities = ['RBS.L','CNA.L','VOD.L','BP.L','MCRO.L']
+
+sec_data = pd.DataFrame()
+for s in securities:
+    sec_data[s] = wb.DataReader(s,data_source='yahoo',start='2011-1-1')['Adj Close']
+sec_data.head()
+
+sec_data.tail()
+
+normalization = sec_data/sec_data.iloc[0]*100
+normalization.plot()
+
+log_returns = np.log(sec_data/sec_data.shift(1))
+log_returns.head()
+
+log_returns.mean()*250
+log_returns.cov()*250
+log_returns.corr()
+
+num_sec = len(securities)
+weights = np.random.random(num_sec)
+weights /= np.sum(weights)
+weights
+
+#Calculate expected portfolio return
+pfolio_return = np.sum(weights * log_returns.mean()*250)
+print('Expected Portfolio Return: '+ str(round(pfolio_return,4)*100)+' %')
+
+#Calculate expected portfolio variance
+pfolio_var = np.dot(weights.T,np.dot(log_returns.cov()*250,weights))
+print('Expected Portfolio Variance: '+str(round(pfolio_var,3)*100)+' %')
+
+#Calculate expected portfolio volatility
+pfolio_vol = np.sqrt(np.dot(weights.T,np.dot(log_returns.cov()*250,weights)))
+print('Expected portfolio volatility:' +str(round(pfolio_vol,4)*100)+' %')
+
+p_returns = []
+p_volatility = []
+
+for x in range(1000):
+    weights = np.random.random(num_sec)
+    weights /= np.sum(weights)
+    p_returns.append(np.sum(weights * log_returns.mean()*250))
+    p_volatility.append(np.sqrt(np.dot(weights.T,np.dot(log_returns.cov()*250,weights))))
+    
+p_returns = np.array(p_returns)
+p_volatility = np.array(p_volatility)
+p_returns,p_volatility
+
+portfolios = pd.DataFrame({'Return':p_returns,'Volatility':p_volatility})
+portfolios.head()
+portfolios.tail()
+
+portfolios.plot(x='Volatility',y='Return',kind = 'scatter')
+plt.title('Efficient frontier-markovitz Optimisation')
+plt.xlabel('Volatility')
+plt.ylabel('Return')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

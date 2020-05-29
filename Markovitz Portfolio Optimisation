@@ -1,0 +1,79 @@
+
+Markovitz Portfolio Optimisation
+
+import numpy as np
+import pandas as pd
+from pandas_datareader import data as wb
+import matplotlib.pyplot as plt
+%matplotlib inline
+
+assets = ['WMT', 'FB']
+pf_data = pd.DataFrame()
+
+for a in assets:
+    pf_data[a] = wb.DataReader(a, data_source = 'yahoo', start = '2014-1-1')['Adj Close']
+
+log_returns = np.log(pf_data / pf_data.shift(1))
+
+num_assets = len(assets)
+
+weights = np.random.random(num_assets)
+weights /= np.sum(weights)
+weights
+
+#Expected return
+np.sum(weights * log_returns.mean()) * 250
+
+#Expected Portfolio Variance
+np.dot(weights.T, np.dot(log_returns.cov() * 250, weights))
+
+#Expected Portfolio Volatility (std deviation)
+np.sqrt(np.dot(weights.T,np.dot(log_returns.cov() * 250, weights)))
+
+pf_returns = []
+pf_volatilities = []
+
+for x in range (1000):
+    weights = np.random.random(num_assets)
+    weights /= np.sum(weights)
+    pf_returns.append(np.sum(weights * log_returns.mean()) * 250)
+    pf_volatilities.append(np.sqrt(np.dot(weights.T,np.dot(log_returns.cov() * 250, weights))))
+    
+pf_returns, pf_volatilities
+
+pf_returns = np.array(pf_returns)
+pf_volatilities = np.array(pf_volatilities)
+
+pf_returns, pf_volatilities
+
+portfolios = pd.DataFrame({'Return':pf_returns,'Volatility':pf_volatilities})
+
+portfolios.plot(x='Volatility',y='Return',kind='scatter',c='r',figsize=(10,6))
+plt.title('Efficient Frontier-Markovitz Optimization',c='r')
+plt.xlabel('Volatility',c='r')
+plt.ylabel('Return',c='r')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

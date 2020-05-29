@@ -1,0 +1,26 @@
+
+import numpy as np
+import pandas as pd 
+from pandas_datareader import data as wb
+import matplotlib.pyplot as plt
+
+tickers = ['RBS.L','LLOY.L','BARC.L','HSBC']
+
+mydata = pd.DataFrame()
+for t in tickers:
+    mydata[t] = wb.DataReader(t,data_source='yahoo',start='2012-1-1')['Adj Close']
+
+mydata = round(mydata,2)
+
+#Normalization : start from a common point
+
+(mydata/mydata.iloc[0]*100).plot(figsize=(16,5))
+
+returns = (mydata/mydata.shift(1))-1
+returns.head()
+
+weights = np.array([0.25,0.25,0.25,0.25])
+
+np.dot(returns,weights)
+
+str(round(np.dot(returns,weights),4)*100)+ ' %'

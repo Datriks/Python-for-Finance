@@ -1,0 +1,41 @@
+
+import numpy as np
+import pandas as pd 
+from pandas_datareader import data as wb
+import matplotlib.pyplot as plt
+
+tickers = ['PG','BEI.DE']
+
+sec_data = pd.DataFrame()
+for t in tickers:
+    sec_data[t] = wb.DataReader(t,data_source='yahoo',start='2007-1-1')['Adj Close']
+sec_data.head(10)
+
+#Graph
+normalization = sec_data/sec_data.iloc[0]
+normalization.plot(figsize=(16,5),lw = 1)
+
+#Calculating the returns
+sec_returns = np.log(sec_data/sec_data.shift(1))
+sec_returns
+
+#Risk associatetd with a security
+round(sec_returns[['PG','BEI.DE']].mean()*250,5)*100
+
+#Volatility of a given security
+round(sec_returns[['PG','BEI.DE']].std()*250**0.5,4)*100
+
+#assign the weights of each security in your portfolio
+weights = np.array([0.5,0.5])
+
+#Calculating the portfolio variance or Risk
+pfolio_var = np.dot(weights.T,np.dot(sec_returns.cov()*250,weights))
+
+print('Variance or Risk of portfolio '+str(round(pfolio_var,4)*100)) + ' %')
+
+#Calculating the volatility of you portfolio
+pfolio_vol = (np.dot(weights.T,np.dot(sec_returns.cov()*250,weights)))**0.5
+
+print('Volatility of portfolio '+str(round(pfolio_vol,4)*100)) + ' %')
+
+

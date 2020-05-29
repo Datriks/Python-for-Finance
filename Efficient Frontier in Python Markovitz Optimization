@@ -1,0 +1,100 @@
+Efficient Frontier in Python Markovitz Optimization
+
+import numpy as np
+import pandas as pd 
+from pandas_datareader import data as wb
+import matplotlib.pyplot as plt
+%matplotlib inline
+
+plt.rcParams['figure.figsize'] = (16, 5)
+plt.rcParams['figure.dpi'] = 300
+plt.rcParams['lines.linewidth'] = 1
+plt.rcParams['axes.grid'] = True
+plt.rcParams['axes.facecolor'] = 'FFFFFF'
+plt.rcParams['font.size'] = 14
+plt.rcParams['patch.edgecolor'] = 'none'
+
+assets = ['PG','^GSPC']
+pf_data = pd.DataFrame()
+for a in assets:
+    pf_data[a]=wb.DataReader(a,data_source='yahoo',start='2010-1-1')['Adj Close']
+pf_data.head()
+
+(pf_data/pf_data.iloc[0]*100).plot(figsize=(16,5))
+
+log_returns = np.log(pf_data/pf_data.shift(1))
+log_returns
+
+log_returns.mean()*250
+
+log_returns.cov()*250
+
+log_returns.corr()
+-------------------------------------------------------------
+num_assets = len(assets)
+weights = np.random.random(num_assets)
+weights /=np.sum(weights)
+weights
+
+#Expected Portfolio Return:
+np.sum(weights * log_returns.mean())*250
+
+#Expected Portfolio Variance
+np.dot(weights.T,np.dot(log_returns.cov()*250,weights))
+
+#Expected Portfolio Volatility (std deviation)
+np.sqrt(np.dot(weights.T,np.dot(log_returns.cov()*250,weights)))
+------------------------------------------------------------------
+pfolio_returns = []
+pfolio_volatility =[]
+
+for x in range(1000):
+    weights = np.random.random(num_assets)
+    weights /= np.sum(weights)
+    pfolio_returns.append(np.sum(weights*log_returns.mean()*250))
+    pfolio_volatility.append(np.sqrt(np.dot(weights.T,np.dot(log_returns.cov()*250,weights))))
+    
+pfolio_returns,pfolio_volatility
+-----------------------------------------------------------------
+pfolio_returns = []
+pfolio_volatility =[]
+
+for x in range(1000):
+    weights = np.random.random(num_assets)
+    weights /= np.sum(weights)
+    pfolio_returns.append(np.sum(weights*log_returns.mean()*250))
+    pfolio_volatility.append(np.sqrt(np.dot(weights.T,np.dot(log_returns.cov()*250,weights))))
+    
+pfolio_returns = np.array(pfolio_returns)
+pfolio_volatility = np.array(pfolio_volatility)
+
+pfolio_returns,pfolio_volatility
+
+portfolios = pd.DataFrame({'Return':pfolio_returns, 'Volatility':pfolio_volatility})
+
+portfolios.head()
+
+portfolios.tail()
+--------------------------------------------------------------------
+portfolios.plot(x='Volatility', y='Return',kind='scatter',figsize=(10,6))
+plt.title('Efficient Frontier- Markovitz Optimisation')
+plt.xlabel('Expected Volatility')
+plt.ylabel('Expected Return')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

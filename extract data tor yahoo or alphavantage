@@ -1,0 +1,39 @@
+=COUNTIF($B$13:$B$32,">="&E16)-COUNTIF($B$13:$B$32">"&F13
+
+Welcome to Alpha Vantage! Here is your API key: 
+
+EWPMUSPI2FSZMG8D
+
+Please record this API key for future access to Alpha Vantage.
+
+from pandas_datareader import data as wb
+F = wb.DataReader('F', data_source='yahoo', start='2015-1-1')
+rbs = wb.DataReader('RBS.L',data_source='yahoo',start='2011-1-1')
+rbs.to_excel('rbs-output.xlsx')
+
+import pandas as pd
+from pandas_datareader import data as wb
+
+tickers = ['RBS.L','LLOY.L','BARC.L','HSBC']
+newdata = pd.DataFrame()
+for t in tickers:
+	newdata[t] = wb.DataReader(t,data_source='yahoo',start='2011-1-1')[Adj Close]
+	
+round(newdata,2).head(10)
+
+
+
+import numpy as np
+import pandas as pd
+from pandas_datareader import data as wb
+from alpha_vantage.timeseries import TimeSeries
+
+ts = TimeSeries(key='EWPMUSPI2FSZMG8D', output_format='pandas')
+
+rbs_av, metadata = ts.get_daily_adjusted('RBS',outputsize='full')
+barc_av, metadata = ts.get_daily_adjusted('BARC.L',outputsize='full')
+lloy_av, metadata = ts.get_daily_adjusted('LLOY.L', outputsize='full')
+
+pfolio_av = pd.concat([rbs_av['5. adjusted close'],lloy_av['5. adjusted close'],barc_av['5. adjusted close']],axis=1)
+
+pfolio_av.columns = ['RBS','LLOY','BARC']
