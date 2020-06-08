@@ -1,0 +1,26 @@
+#Monte Carlo - Predicting Gross Profit
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+rev_m = 200
+rev_stdev = 10
+iterations = 256
+
+rev = np.random.normal(rev_m, rev_stdev, iterations)
+COGS = - (rev * np.random.normal(0.4,0.2))
+
+COGS.mean(), COGS.std()
+
+Gross_Profit = rev + COGS
+Gross_Profit
+
+Gross_Profit.max()
+Gross_Profit.min()
+
+Gross_Profit.mean()
+Gross_Profit.std()
+
+plt.figure(figsize=(16,6))
+plt.hist(Gross_Profit, bins=20, color = "#292930", ec="white")
+

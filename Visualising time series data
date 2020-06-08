@@ -1,0 +1,65 @@
+
+#IMPORT ALL THE LIBRARIES BELOW
+import pandas as pd
+import numpy as np
+import yfinance as yf
+import matplotlib.pyplot as plt
+%matplotlib inline
+plt.rcParams['figure.figsize'] = (16, 5)
+plt.style.use("bmh")
+
+#download data as pandas dataframe
+df = yf.download('RBS.L',
+                start='2011-1-1',
+                end='2020-5-29',
+                progress=False)
+df.head()
+
+#select just the Adj Close column
+df = df.loc[:,['Adj Close']]
+df.rename(columns={'Adj Close':'adj_close'},inplace=True)
+df.head()
+
+#create simple and log returns
+df['simple_return']=df.adj_close.pct_change()
+df['log_return']=np.log(df.adj_close/df.adj_close.shift(1))
+df.head()
+
+#drop the NA's in the first row
+df.dropna(how='any',inplace=True)
+df.head()
+
+#the plot method of pandas
+fig,ax = plt.subplots(3,1,figsize=(16,8))
+#add prices
+df.adj_close.plot(ax=ax[0],lw=1)
+ax[0].set(title='RBS time series',
+         ylabel = 'Stock price (£)')
+
+#add simple returns
+df.simple_return.plot(ax=ax[1],color='red',lw=1)
+ax[1].set(ylabel='Simple Returns (%)')
+
+# add log returns
+df.log_return.plot(ax=ax[2],lw=1)
+ax[2].set(xlabel='Date',
+          ylabel='log_returns')
+ax[2].tick_params(axis='x',
+                 which='major',
+                 labelsize=10)
+
+# Cufflinks Plotting
+import cufflinks as cf
+from plotly.offline import iplot, init_notebook_mode
+
+# set up settings (run it once)
+#cf.set_config_file(world_readable=True, theme='pearl', 
+                    #offline=True)
+# initialise notebook display
+init_notebook_mode()	
+
+df.iplot(subplots=True, shape=(3,1), shared_xaxes=True,title='RBS Time Series')
+
+
+
+			 

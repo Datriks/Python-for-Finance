@@ -1,0 +1,27 @@
+
+import pandas as pd 
+from pandas_datareader import data as wb
+import matplotlib.pyplot as plt
+%matplotlib inline
+import seaborn as sns
+plt.rcParams['figure.figsize'] = (16, 5)
+plt.style.use("bmh")
+
+sec_data_rbs = wb.DataReader('RBS.L',data_source='yahoo',start='2011-1-1')
+sec_data_rbs.head()
+
+sec_data_rbs.to_excel('rbs_history.xlsx')
+
+sec_data_rbs.loc['2020-1-1':'2020-5-29',['Open','Close']].plot()
+
+sec_data_rbs.loc['2019-1-1':'2020-1-1',['Close']].plot()
+
+sec_data_rbs.loc['2020-1-1':'2020-5-29',['Close]].min()
+
+sec_data_rbs.loc['2020-1-1':'2020-5-29',['Close]].max()
+
+sec_data_rbs['Close'].pct_change().plot()
+
+sec_data_rbs.loc['2019-1-1':'2020-1-1',['Close']].pct_change().plot()
+
+sec_data_rbs['2020-5']['Close'].plot()

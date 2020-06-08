@@ -1,0 +1,34 @@
+
+#IMPORT ALL THE LIBRARIES BELOW
+import pandas as pd
+import numpy as np
+from pandas_datareader import data as wb 
+import matplotlib.pyplot as plt
+%matplotlib inline
+pd.set_option('display.max_columns',200)
+pd.set_option('display.max_rows',200)
+print('StandardImport Completed')
+
+tickers = ['PG','^GSPC']
+data = pd.DataFrame()
+for t in tickers:
+    data[t] = wb.DataReader(t,data_source='yahoo',start='2015-5-28',end='2020-5-28')['Adj Close']
+
+sec_returns = np.log(data/data.shift(1))
+sec_returns.head()
+
+#find the covariance
+cov = sec_returns.cov()*250
+cov
+
+#covariance of the SP500
+cov_with_market = cov.iloc[0,1]
+cov_with_market
+
+#annualised variance of the SP500
+market_var = sec_returns['^GSPC'].var()*250
+market_var
+
+PG_beta = cov_with_market/market_var
+PG_beta
+print('This is Beta: ' + str(round(PG_beta,4)))

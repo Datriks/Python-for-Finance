@@ -1,0 +1,64 @@
+
+#IMPORT ALL THE LIBRARIES BELOW
+import pandas as pd
+import numpy as np
+import yfinance as yf
+import matplotlib.pyplot as plt
+%matplotlib inline
+pd.set_option('display.max_columns',200)
+pd.set_option('display.max_rows',200)
+print('StandardImport Completed')
+plt.rcParams['figure.figsize'] = (16, 5)
+plt.style.use("bmh")
+
+#import data 
+df = yf.download('RBS.L',
+                 start='2011-1-1',
+                end='2020-5-29',
+                progress=False)
+df.head()
+
+#keep only the adjusted close price
+df = df.loc[:,['Adj Close']]
+df.rename(columns={'Adj Close':'adj_close'},inplace=True)
+
+#calculate simple returns
+df['log_return']=np.log(df.adj_close/df.adj_close.shift(1))
+
+#remove the unwanted data
+df.drop('adj_close',axis=1,inplace=True)
+df.dropna(axis=0,inplace=True)
+df.head()
+
+#define the function to calc realized volatility
+def realised_volatility(x):
+    return np.sqrt(np.sum(x**2))
+	
+#calculate montly realized volatility
+df_rv = df.groupby(pd.Grouper(freq='M')).apply(realised_volatility)
+df_rv.rename(columns={'log_return':'rv'},inplace=True)
+
+#annualised realised volatility
+df_rv.rv = df_rv.rv * np.sqrt(12)
+
+#plot the results
+fig,ax = plt.subplots(2,1,sharex=True)
+ax[0].plot(df,c='r')
+ax[1].plot(df_rv)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

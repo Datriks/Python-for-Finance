@@ -1,0 +1,115 @@
+MC Predicting Stock Prices
+
+import numpy as np  
+import pandas as pd  
+from pandas_datareader import data as wb  
+import matplotlib.pyplot as plt  
+from scipy.stats import norm
+%matplotlib inline
+
+ticker = 'MSFT' 
+data = pd.DataFrame()
+data[ticker] = wb.DataReader(ticker, data_source='yahoo', start='2000-1-1')['Adj Close']
+
+log_returns = np.log(1 + data.pct_change())
+u = log_returns.mean()
+var = log_returns.var()
+
+drift = u - (0.5 * var)
+
+stdev = log_returns.std()
+
+drift.values,stdev.values
+
+t_intevals = 250
+iterations = 10
+-----------------------------------------------------------------
+$daily\_returns = exp({drift} + {stdev} * z),$
+$where\  z = norm.ppf(np.random.rand(t\_intervals, iterations)$
+----------------------------------------------------------------------
+z = norm.ppf(np.random.rand(t_intevals,iterations))
+z
+
+daily_returns = np.exp(drift.values + stdev.values * norm.ppf(np.random.rand(t_intervals, iterations)))
+
+S0 = data.iloc[-1]
+S0
+
+price_list = np.zeros_like(daily_returns)
+price_list
+
+price_list[0] = S0
+price_list
+
+for t in range(1, t_intervals):
+    price_list[t] = price_list[t-1] * daily_returns[t]
+    
+price_list
+
+plt.plot(price_list,lw=1)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

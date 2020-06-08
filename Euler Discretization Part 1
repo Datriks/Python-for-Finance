@@ -1,0 +1,129 @@
+Euler Discretization Part 1
+
+import numpy as np
+import pandas as pd 
+from pandas_datareader import data as wb
+from scipy.stats import norm
+import matplotlib.pyplot as plt
+%matplotlib inline
+import os, warnings
+warnings.simplefilter('ignore')
+plt.rcParams['figure.figsize']=(16,6)
+plt.style.use('bmh')
+
+ticker = ['RBS.L']
+data = pd.DataFrame()
+data[ticker] = wb.DataReader(ticker,data_source='yahoo',start='2011-1-1')['Adj Close']
+
+data.head()
+
+log_returns = np.log(1+data.pct_change())
+log_returns.tail()
+
+${\LARGE S_t = S_{t-1} \mathbin{\cdot} e^{((r - \frac{1}{2} \cdot stdev^2) \mathbin{\cdot} \delta_t + stdev \mathbin{\cdot} \sqrt{\delta_t} \mathbin{\cdot} Z_t)}  }$
+
+r = 0.00185
+
+stdev = log_returns.std()*250**0.5
+stdev
+
+type(stdev)
+
+stdev = stdev.values
+stdev
+
+T = 1.0
+t_intervals = 250
+delta_t = T/t_intervals
+
+iterations = 10000
+
+Z = np.random.standard_normal((t_intervals + 1,iterations))
+S = np.zeros_like(Z)
+S0 = data.iloc[-1]
+S[0] = S0
+
+for t in range(1, t_intervals + 1):
+    S[t] = S[t-1]*np.exp((r-0.5*stdev**2)*delta_t+stdev*delta_t**0.5*Z[t])
+
+S
+S.shape
+
+plt.plot(S[:, :10])
+
+# create an array as pay off if stock price - strike price is  > 0
+# the value 144 is the value of K in Black-Scholes Merton calculation
+#which is the price of stock at a future date 
+p = np.maximum(S[-1] - 144, 0)
+
+p
+p.shape
+#Use the following formula to forecast the price of a stock option
+$C = \frac{exp(-r \cdot T) \cdot \sum{p_i}}{iterations}$
+
+C = np.exp(-r * T)*np.sum(p)/iterations
+C
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
