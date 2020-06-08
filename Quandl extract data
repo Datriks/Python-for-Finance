@@ -6,8 +6,6 @@ import quandl
 data = quandl.get("WIKI/KO", start_date="2016-01-01", end_date="2018-01-01", 
     api_key=<Your_API_Key>)
 	
-UkBXz6sLeET-4uRJ-65q
-
 import pandas as pd 
 import quandl
 
